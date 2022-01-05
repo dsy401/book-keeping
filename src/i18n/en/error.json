@@ -1,0 +1,23 @@
+{
+  "INTERNAL": {
+    "MISSING_CONFIG": "Something went wrong while processing your request. Please try again or contact OBookKeeping if the problem persists."
+  },
+  "TOKEN": {
+    "INVALID": "Token is valid."
+  },
+  "USER": {
+    "NOT_FOUND": "User not found.",
+    "FAILED_TO_SAVE": "user is failed to be saved.",
+    "FAILED_TO_GET": "user is failed be gotten."
+  },
+  "TRANSACTION": {
+    "FAILED_TO_SAVE": "transaction is failed to be saved.",
+    "FAILED_TO_GET": "transaction is failed be gotten.",
+    "NOT_FOUND": "transaction not found",
+    "FAILED_TO_DELETE": "transaction is failed to be deleted"
+  },
+  "AUTH": {
+    "INCORRECT_PASSWORD": "password is incorrect.",
+    "AUTHORIZATION_NOT_PROVIDED": "No token provided"
+  }
+}
