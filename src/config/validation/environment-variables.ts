@@ -21,6 +21,13 @@ export class EnvironmentVariables {
   @IsNumber({ maxDecimalPlaces: 0, allowNaN: false, allowInfinity: false })
   REFRESH_TOKEN_TTL!: number;
 
+  // AWS Config
+  @IsString()
+  AWS_ACCESS_KEY_ID!: string;
+
+  @IsString()
+  AWS_SECRET_ACCESS_KEY!: string;
+
   // Database
   @ValidateIf((o) => o.NODE_ENV === Environment.LOCAL)
   @IsString()

@@ -1,4 +1,4 @@
-import { IsEnum, IsNumber, IsString, IsUUID } from "class-validator";
+import { IsEnum, IsNumber, IsString, IsUUID } from 'class-validator';
 import { PropertyType } from '../../../domain/property/property';
 import type { UUID } from '../../../../types/uuid.type';
 

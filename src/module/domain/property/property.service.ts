@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PropertyRepository } from './property.repository';
 import { Property } from './property';
 import type { UUID } from '../../../types/uuid.type';
-import { InternalException } from "../../../exception/internal-exception";
+import { InternalException } from '../../../exception/internal-exception';
 
 @Injectable()
 export class PropertyService {

@@ -1,0 +1,17 @@
+version: '2'
+services:
+  app:
+    build: .
+    command: yarn start:dev
+    volumes:
+      - .:/usr/app/
+      - /usr/app/node_modules
+    ports:
+      - "8080:8080"
+    depends_on:
+      - localstack
+
+  localstack:
+    image: "localstack/localstack"
+    ports:
+      - "4566:4566"

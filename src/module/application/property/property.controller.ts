@@ -5,16 +5,19 @@ import {
   Get,
   Param,
   Patch,
-  Post, Put,
-  Req
-} from "@nestjs/common";
+  Post,
+  Put,
+  Req,
+} from '@nestjs/common';
 import { UseJwtGuard } from '../../global/guard/jwt.guard';
 import { PropertyApplicationService } from './property.service';
 import { PropertyResponseDto } from './types/response.types';
 import {
   CreatePropertyRequestDto,
-  PropertyIdParams, UpdatePropertyAmountRequestDto, UpdatePropertyRequestDto
-} from "./types/request.types";
+  PropertyIdParams,
+  UpdatePropertyAmountRequestDto,
+  UpdatePropertyRequestDto,
+} from './types/request.types';
 import { JwtRequest } from '../../../types/request.type';
 import { Property } from '../../domain/property/property';
 
