@@ -34,4 +34,10 @@ export class EnvironmentVariables {
 
   @IsString()
   DATABASE_TRANSACTION_TABLE!: string;
+
+  @IsString()
+  DATABASE_TRANSACTION_CATEGORY_TABLE!: string;
+
+  @IsString()
+  DATABASE_PROPERTY_TABLE!: string;
 }

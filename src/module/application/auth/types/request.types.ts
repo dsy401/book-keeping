@@ -11,4 +11,7 @@ export class SignInRequestDto {
 export class RefreshTokenRequestDto {
   @IsString()
   refreshToken!: string;
+
+  @IsString()
+  accessToken!: string;
 }

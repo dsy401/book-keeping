@@ -5,6 +5,7 @@ import {
   Get,
   HttpStatus,
   Param,
+  Patch,
   Post,
   Req,
 } from '@nestjs/common';
@@ -13,16 +14,12 @@ import { Transaction } from '../../domain/transaction/transaction';
 import { DateTime } from 'luxon';
 import {
   CreateTransactionRequestDto,
-  DeleteTransactionParams,
   GetByDateRangeRequestDto,
-  GetByTransactionIdParams,
+  PartialUpdateRequestDto,
+  TransactionIdParams,
 } from './types/request.types';
 import { InternalException } from '../../../exception/internal-exception';
-import {
-  CreateTransactionResponseDto,
-  GetByTransactionIdResponseDto,
-  TransactionResponseDto,
-} from './types/response.types';
+import { TransactionResponseDto } from './types/response.types';
 import { UseJwtGuard } from '../../global/guard/jwt.guard';
 import { JwtRequest } from '../../../types/request.type';
 
@@ -34,18 +31,11 @@ export class TransactionController {
   @Post('/')
   public async createTransaction(
     @Body()
-    {
-      type,
-      categoryId,
-      note,
-      amount,
-      transactionDate,
-    }: CreateTransactionRequestDto,
+    { categoryId, note, amount, transactionDate }: CreateTransactionRequestDto,
     @Req() { user: { userId } }: JwtRequest,
-  ): Promise<CreateTransactionResponseDto> {
+  ): Promise<TransactionResponseDto> {
     const transaction = new Transaction(
       userId,
-      type,
       categoryId,
       note,
       amount,
@@ -78,9 +68,9 @@ export class TransactionController {
 
   @Get(':transactionId')
   public async getByTransactionId(
-    @Param() { transactionId }: GetByTransactionIdParams,
+    @Param() { transactionId }: TransactionIdParams,
     @Req() { user: { userId } }: JwtRequest,
-  ): Promise<GetByTransactionIdResponseDto> {
+  ): Promise<TransactionResponseDto> {
     const transaction = await this.transactionService.getByTransactionId(
       transactionId,
       userId,
@@ -99,9 +89,33 @@ export class TransactionController {
 
   @Delete(':transactionId')
   public async deleteTransaction(
-    @Param() { transactionId }: DeleteTransactionParams,
+    @Param() { transactionId }: TransactionIdParams,
     @Req() { user: { userId } }: JwtRequest,
   ): Promise<void> {
     return this.transactionService.delete(transactionId, userId);
+  }
+
+  @Patch(':transactionId')
+  public async partialUpdate(
+    @Param() { transactionId }: TransactionIdParams,
+    @Body() { name, value }: PartialUpdateRequestDto,
+    @Req() { user: { userId } }: JwtRequest,
+  ): Promise<void> {
+    const transaction = await this.transactionService.getByTransactionId(
+      transactionId,
+      userId,
+    );
+
+    if (!transaction) {
+      throw new InternalException(
+        'TRANSACTION.NOT_FOUND',
+        'transaction not found',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    transaction[name as any] = value;
+
+    return this.transactionService.save(transaction);
   }
 }

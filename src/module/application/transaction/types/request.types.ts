@@ -1,27 +1,19 @@
 import {
   IsDateString,
+  IsDefined,
   IsEnum,
   IsNumber,
   IsString,
   IsUUID,
 } from 'class-validator';
 import type { UUID } from '../../../../types/uuid.type';
-import { TransactionType } from '../../../domain/transaction/transaction';
 
-export class GetByTransactionIdParams {
-  @IsUUID()
-  transactionId!: UUID;
-}
-
-export class DeleteTransactionParams {
+export class TransactionIdParams {
   @IsUUID()
   transactionId!: UUID;
 }
 
 export class CreateTransactionRequestDto {
-  @IsEnum(TransactionType)
-  type!: TransactionType;
-
   @IsUUID()
   categoryId!: UUID;
 
@@ -37,8 +29,22 @@ export class CreateTransactionRequestDto {
 
 export class GetByDateRangeRequestDto {
   @IsDateString()
-  startDate: string;
+  startDate!: string;
 
   @IsDateString()
-  endDate: string;
+  endDate!: string;
+}
+
+enum PartialUpdateField {
+  CATEGORY_ID = 'categoryId',
+  NOTE = 'note',
+  AMOUNT = 'amount',
+}
+
+export class PartialUpdateRequestDto {
+  @IsEnum(PartialUpdateField)
+  name!: PartialUpdateField;
+
+  @IsDefined()
+  value!: any;
 }

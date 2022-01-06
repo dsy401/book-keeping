@@ -2,7 +2,10 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { TokenService } from '../../global/token/token.service';
 import { UserService } from '../../domain/user/user.service';
 import { InternalException } from '../../../exception/internal-exception';
-import { SignInResponseDto } from './types/response.type';
+import {
+  RefreshTokenResponseDto,
+  SignInResponseDto,
+} from './types/response.type';
 import { InternalConfigService } from '../../global/config/internal-config.service';
 import { EncryptionService } from '../../global/encryption/encryption.service';
 
@@ -48,6 +51,7 @@ export class AuthService {
     const refreshToken = this.tokenService.create(refreshTokenTTL, {
       userId: user.userId,
       isAccessToken: false,
+      accessToken,
     });
 
     return {
@@ -56,10 +60,18 @@ export class AuthService {
     };
   }
 
-  public refreshToken(refreshToken: string): string {
+  public async refreshToken(
+    refreshToken: string,
+    accessToken: string,
+  ): Promise<RefreshTokenResponseDto> {
     const data = this.tokenService.verify(refreshToken);
 
-    if (!data.userId || data.isAccessToken === true) {
+    if (
+      !data.userId ||
+      data.isAccessToken === true ||
+      !data.accessToken ||
+      data.accessToken !== accessToken
+    ) {
       throw new InternalException(
         'TOKEN.INVALID',
         'Token is invalid',
@@ -67,11 +79,32 @@ export class AuthService {
       );
     }
 
+    const user = await this.userService.getByUserId(data.userId as any);
+
+    if (!user) {
+      throw new InternalException(
+        'TOKEN.INVALID',
+        'User not exist',
+        HttpStatus.FORBIDDEN,
+      );
+    }
+
     const { accessTokenTTL } = this.internalConfigService.getTokenConfig();
 
-    return this.tokenService.create(accessTokenTTL, {
-      userId: data.userId,
+    const newAccessToken = this.tokenService.create(accessTokenTTL, {
+      userId: user.userId,
       isAccessToken: true,
     });
+
+    const newRefreshToken = this.tokenService.create(accessTokenTTL, {
+      userId: user.userId,
+      isAccessToken: false,
+      accessToken: newAccessToken,
+    });
+
+    return {
+      accessToken: newAccessToken,
+      refreshToken: newRefreshToken,
+    };
   }
 }

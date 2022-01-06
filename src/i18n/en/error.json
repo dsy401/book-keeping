@@ -16,6 +16,17 @@
     "NOT_FOUND": "transaction not found",
     "FAILED_TO_DELETE": "transaction is failed to be deleted"
   },
+  "TRANSACTION_CATEGORY": {
+    "FAILED_TO_SAVE": "transaction category is failed to be saved.",
+    "FAILED_TO_DELETE": "transaction category is failed to be deleted.",
+    "FAILED_TO_GET": "transaction category is failed be gotten."
+  },
+  "PROPERTY": {
+    "FAILED_TO_SAVE": "property is failed to be saved.",
+    "FAILED_TO_DELETE": "property is failed to be deleted.",
+    "FAILED_TO_GET": "property is failed be gotten.",
+    "NOT_FOUND": "property not found."
+  },
   "AUTH": {
     "INCORRECT_PASSWORD": "password is incorrect.",
     "AUTHORIZATION_NOT_PROVIDED": "No token provided"

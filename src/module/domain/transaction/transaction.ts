@@ -4,19 +4,12 @@ import { Type } from 'class-transformer';
 import { DynamoTimestampTransformer } from '../../global/database/utils/dynamo-date-transformer';
 import { v4 as uuid } from 'uuid';
 
-export enum TransactionType {
-  INCOME = 'income',
-  EXPENSE = 'expense',
-}
-
 export class Transaction {
   public readonly transactionId: UUID;
 
-  public readonly transactionType: TransactionType;
-
-  public readonly categoryId: UUID;
-
   public readonly userId: UUID;
+
+  public categoryId: UUID;
 
   public note: string;
 
@@ -24,7 +17,7 @@ export class Transaction {
 
   @Type(() => Number)
   @DynamoTimestampTransformer()
-  public transactionDate: DateTime;
+  public readonly transactionDate: DateTime;
 
   @Type(() => Number)
   @DynamoTimestampTransformer()
@@ -32,7 +25,6 @@ export class Transaction {
 
   constructor(
     userId: UUID,
-    type: TransactionType,
     categoryId: UUID,
     note: string,
     amount: number,
@@ -40,7 +32,6 @@ export class Transaction {
   ) {
     this.userId = userId;
     this.transactionId = uuid();
-    this.transactionType = type;
     this.categoryId = categoryId;
     this.note = note;
     this.amount = amount;

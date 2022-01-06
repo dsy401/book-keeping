@@ -29,11 +29,9 @@ export class AuthController {
 
   @Post('refresh-token')
   public refreshToken(
-    @Body() { refreshToken }: RefreshTokenRequestDto,
-  ): RefreshTokenResponseDto {
-    return {
-      accessToken: this.authService.refreshToken(refreshToken),
-    };
+    @Body() { refreshToken, accessToken }: RefreshTokenRequestDto,
+  ): Promise<RefreshTokenResponseDto> {
+    return this.authService.refreshToken(refreshToken, accessToken);
   }
 
   @Post('create-dummy-user')

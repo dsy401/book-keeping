@@ -8,6 +8,8 @@ import { I18nModule, I18nJsonParser } from 'nestjs-i18n';
 import { AuthModule } from './module/application/auth/auth.module';
 import { GlobalModule } from './module/global/global.module';
 import { TransactionModule } from './module/application/transaction/transaction.module';
+import { TransactionCategoryModule } from './module/application/transaction-category/transaction-category.module';
+import { PropertyModule } from './module/application/property/property.module';
 @Module({
   imports: [
     GlobalModule,
@@ -22,6 +24,8 @@ import { TransactionModule } from './module/application/transaction/transaction.
     }),
     AuthModule,
     TransactionModule,
+    TransactionCategoryModule,
+    PropertyModule,
   ],
   controllers: [AppController],
   providers: [AppService],
