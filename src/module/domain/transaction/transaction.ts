@@ -1,15 +1,18 @@
 import type { UUID } from '../../../types/uuid.type';
 import { DateTime } from 'luxon';
 import { Type } from 'class-transformer';
-import { DynamoTimestampTransformer } from '../../global/database/utils/dynamo-date-transformer';
+import { DynamoTimestampTransformer } from '../../../utils/transformer/dynamo-date-transformer';
 import { v4 as uuid } from 'uuid';
+import { TransactionCategory } from '../transaction-category/transaction-category';
+import { DynamoClassTransformer } from '../../../utils/transformer/dynamo-class-transformer';
 
 export class Transaction {
   public readonly transactionId: UUID;
 
   public readonly userId: UUID;
 
-  public categoryId: UUID;
+  @DynamoClassTransformer<Partial<TransactionCategory>>()
+  public category: Partial<TransactionCategory>;
 
   public note: string;
 
@@ -25,14 +28,14 @@ export class Transaction {
 
   constructor(
     userId: UUID,
-    categoryId: UUID,
+    category: Partial<TransactionCategory>,
     note: string,
     amount: number,
     date: DateTime,
   ) {
     this.userId = userId;
     this.transactionId = uuid();
-    this.categoryId = categoryId;
+    this.category = category;
     this.note = note;
     this.amount = amount;
     this.transactionDate = date;

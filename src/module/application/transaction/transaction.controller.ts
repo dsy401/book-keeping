@@ -22,6 +22,7 @@ import { InternalException } from '../../../exception/internal-exception';
 import { TransactionResponseDto } from './types/response.types';
 import { UseJwtGuard } from '../../global/guard/jwt.guard';
 import { JwtRequest } from '../../../types/request.type';
+import { TransactionCategory } from '../../domain/transaction-category/transaction-category';
 
 @Controller('api/v1/transaction')
 @UseJwtGuard()
@@ -31,12 +32,12 @@ export class TransactionController {
   @Post('/')
   public async createTransaction(
     @Body()
-    { categoryId, note, amount, transactionDate }: CreateTransactionRequestDto,
+    { category, note, amount, transactionDate }: CreateTransactionRequestDto,
     @Req() { user: { userId } }: JwtRequest,
   ): Promise<TransactionResponseDto> {
     const transaction = new Transaction(
       userId,
-      categoryId,
+      category,
       note,
       amount,
       DateTime.fromISO(transactionDate),

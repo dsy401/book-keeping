@@ -1,7 +1,7 @@
 import type { UUID } from '../../../types/uuid.type';
 import { DateTime } from 'luxon';
 import { Type } from 'class-transformer';
-import { DynamoTimestampTransformer } from '../../global/database/utils/dynamo-date-transformer';
+import { DynamoTimestampTransformer } from '../../../utils/transformer/dynamo-date-transformer';
 import { v4 as uuid } from 'uuid';
 
 export enum CategoryType {

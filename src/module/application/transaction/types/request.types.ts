@@ -5,17 +5,35 @@ import {
   IsNumber,
   IsString,
   IsUUID,
+  ValidateNested,
 } from 'class-validator';
 import type { UUID } from '../../../../types/uuid.type';
+import { CategoryType } from '../../../domain/transaction-category/transaction-category';
+import { Type } from 'class-transformer';
 
 export class TransactionIdParams {
   @IsUUID()
   transactionId!: UUID;
 }
 
-export class CreateTransactionRequestDto {
+class TransactionCategoryRequestDto {
   @IsUUID()
   categoryId!: UUID;
+
+  @IsEnum(CategoryType)
+  type!: CategoryType;
+
+  @IsString()
+  name!: string;
+
+  @IsString()
+  icon!: string;
+}
+
+export class CreateTransactionRequestDto {
+  @Type(() => TransactionCategoryRequestDto)
+  @ValidateNested()
+  category!: TransactionCategoryRequestDto;
 
   @IsString()
   note!: string;

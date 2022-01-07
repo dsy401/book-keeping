@@ -1,7 +1,7 @@
 import { DateTime } from 'luxon';
 import { Transform } from 'class-transformer';
 
-export function DynamoTimestampTransformer(): PropertyDecorator {
+export const DynamoTimestampTransformer = (): PropertyDecorator => {
   return (target: any, propertyKey: string | symbol): void => {
     Transform(transformIncomingValue(), { toClassOnly: true })(
       target,
@@ -12,7 +12,7 @@ export function DynamoTimestampTransformer(): PropertyDecorator {
       toPlainOnly: true,
     })(target, propertyKey);
   };
-}
+};
 
 const transformIncomingValue =
   () =>
