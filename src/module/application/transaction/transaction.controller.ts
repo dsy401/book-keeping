@@ -35,6 +35,7 @@ export class TransactionController {
     { category, note, amount, transactionDate }: CreateTransactionRequestDto,
     @Req() { user: { userId } }: JwtRequest,
   ): Promise<TransactionResponseDto> {
+    //TODO: categoryID not found, then reject user to add transaction
     const transaction = new Transaction(
       userId,
       category,
