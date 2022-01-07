@@ -54,7 +54,7 @@ export class GetByDateRangeRequestDto {
 }
 
 enum PartialUpdateField {
-  CATEGORY_ID = 'categoryId',
+  CATEGORY = 'category',
   NOTE = 'note',
   AMOUNT = 'amount',
 }
