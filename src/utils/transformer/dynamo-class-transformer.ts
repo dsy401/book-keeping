@@ -22,7 +22,7 @@ export const DynamoClassTransformer = <T>(
 const transformIncomingValue =
   <T>(classConstructor: ClassConstructor<T>) =>
   ({ value }: { value: string }) => {
-    return plainToClass(JSON.parse(value), classConstructor);
+    return plainToClass(classConstructor, JSON.parse(value));
   };
 
 const transformOutgoingValue =

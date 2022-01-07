@@ -74,22 +74,41 @@ export class TransactionRepository extends DatabaseRepository<Transaction> {
     userId: UUID,
     startDateTime: number,
     endDateTime: number,
+    exclusiveStartKey: any = undefined,
+    transactions: Transaction[] = [],
   ): Promise<Transaction[]> {
     const command = new QueryCommand({
       TableName: this.tableName,
       IndexName: 'userIdTransactionDateIndex',
+      Limit: 1000,
       ExpressionAttributeValues: marshall({
         ':userId': userId,
         ':startDateTime': startDateTime,
         ':endDateTime': endDateTime,
       }),
+      ExclusiveStartKey: exclusiveStartKey,
       KeyConditionExpression:
         'userId = :userId AND transactionDate BETWEEN :startDateTime AND :endDateTime',
     });
 
     try {
-      const { Items } = await this.client.send(command);
-      return Items.map((item) => plainToClass(Transaction, unmarshall(item)));
+      const { Items, LastEvaluatedKey } = await this.client.send(command);
+
+      const items = Items.map((item) =>
+        plainToClass(Transaction, unmarshall(item)),
+      );
+
+      if (LastEvaluatedKey) {
+        return this.getByDateTimeRange(
+          userId,
+          startDateTime,
+          endDateTime,
+          LastEvaluatedKey,
+          transactions.concat(items),
+        );
+      }
+
+      return transactions.concat(items);
     } catch (error) {
       throw new InternalException('TRANSACTION.FAILED_TO_GET', error.message);
     }
