@@ -41,7 +41,6 @@ export class TransactionCategoryController {
     return transactionCategory;
   }
 
-  // side effect (category attached to the transaction)
   @Delete(':categoryId')
   public async deleteTransactionCategory(
     @Param() { categoryId }: TransactionCategoryIdParams,

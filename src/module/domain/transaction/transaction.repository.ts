@@ -48,6 +48,28 @@ export class TransactionRepository extends DatabaseRepository<Transaction> {
     }
   }
 
+  public async getByCategoryId(
+    categoryId: UUID,
+    userId: UUID,
+  ): Promise<Transaction[]> {
+    const command = new QueryCommand({
+      TableName: this.tableName,
+      IndexName: 'userIdCategoryIdIndex',
+      ExpressionAttributeValues: marshall({
+        ':userId': userId,
+        ':categoryId': categoryId,
+      }),
+      KeyConditionExpression: 'userId = :userId AND categoryId= :categoryId',
+    });
+
+    try {
+      const { Items } = await this.client.send(command);
+      return Items.map((item) => plainToClass(Transaction, unmarshall(item)));
+    } catch (error) {
+      throw new InternalException('TRANSACTION.FAILED_TO_GET', error.message);
+    }
+  }
+
   public async getByDateTimeRange(
     userId: UUID,
     startDateTime: number,
@@ -89,6 +111,10 @@ export class TransactionRepository extends DatabaseRepository<Transaction> {
           AttributeName: 'transactionDate',
           AttributeType: 'N',
         },
+        {
+          AttributeName: 'categoryId',
+          AttributeType: 'S',
+        },
       ],
       KeySchema: [
         {
@@ -110,6 +136,20 @@ export class TransactionRepository extends DatabaseRepository<Transaction> {
             },
             {
               AttributeName: 'transactionDate',
+              KeyType: 'RANGE',
+            },
+          ],
+          Projection: { ProjectionType: 'ALL' },
+        },
+        {
+          IndexName: 'userIdCategoryIdIndex',
+          KeySchema: [
+            {
+              AttributeName: 'userId',
+              KeyType: 'HASH',
+            },
+            {
+              AttributeName: 'categoryId',
               KeyType: 'RANGE',
             },
           ],

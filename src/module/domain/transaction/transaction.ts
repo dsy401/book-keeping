@@ -11,8 +11,10 @@ export class Transaction {
 
   public readonly userId: UUID;
 
-  @DynamoClassTransformer<Partial<TransactionCategory>>()
-  public category: Partial<TransactionCategory>;
+  public categoryId: UUID;
+
+  @DynamoClassTransformer<TransactionCategory>(TransactionCategory)
+  public category: TransactionCategory;
 
   public note: string;
 
@@ -28,17 +30,21 @@ export class Transaction {
 
   constructor(
     userId: UUID,
-    category: Partial<TransactionCategory>,
+    categoryId: UUID,
     note: string,
     amount: number,
     date: DateTime,
   ) {
     this.userId = userId;
     this.transactionId = uuid();
-    this.category = category;
+    this.categoryId = categoryId;
     this.note = note;
     this.amount = amount;
     this.transactionDate = date;
     this.createdAt = DateTime.now();
+  }
+
+  public setCategory(category: TransactionCategory): void {
+    this.category = category;
   }
 }

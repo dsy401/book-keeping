@@ -32,13 +32,12 @@ export class TransactionController {
   @Post('/')
   public async createTransaction(
     @Body()
-    { category, note, amount, transactionDate }: CreateTransactionRequestDto,
+    { categoryId, note, amount, transactionDate }: CreateTransactionRequestDto,
     @Req() { user: { userId } }: JwtRequest,
   ): Promise<TransactionResponseDto> {
-    //TODO: categoryID not found, then reject user to add transaction
     const transaction = new Transaction(
       userId,
-      category,
+      categoryId,
       note,
       amount,
       DateTime.fromISO(transactionDate),
@@ -102,7 +101,7 @@ export class TransactionController {
     @Param() { transactionId }: TransactionIdParams,
     @Body() { name, value }: PartialUpdateRequestDto,
     @Req() { user: { userId } }: JwtRequest,
-  ): Promise<void> {
+  ): Promise<TransactionResponseDto> {
     const transaction = await this.transactionService.getByTransactionId(
       transactionId,
       userId,
@@ -118,6 +117,10 @@ export class TransactionController {
 
     transaction[name as any] = value;
 
-    return this.transactionService.save(transaction);
+    await this.transactionService.save(transaction);
+
+    return transaction;
   }
+
+  //TODO: add get transactions by categoryID
 }

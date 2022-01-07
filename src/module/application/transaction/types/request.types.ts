@@ -16,24 +16,9 @@ export class TransactionIdParams {
   transactionId!: UUID;
 }
 
-class TransactionCategoryRequestDto {
+export class CreateTransactionRequestDto {
   @IsUUID()
   categoryId!: UUID;
-
-  @IsEnum(CategoryType)
-  type!: CategoryType;
-
-  @IsString()
-  name!: string;
-
-  @IsString()
-  icon!: string;
-}
-
-export class CreateTransactionRequestDto {
-  @Type(() => TransactionCategoryRequestDto)
-  @ValidateNested()
-  category!: TransactionCategoryRequestDto;
 
   @IsString()
   note!: string;
@@ -54,7 +39,7 @@ export class GetByDateRangeRequestDto {
 }
 
 enum PartialUpdateField {
-  CATEGORY = 'category',
+  CATEGORY_ID = 'categoryId',
   NOTE = 'note',
   AMOUNT = 'amount',
 }

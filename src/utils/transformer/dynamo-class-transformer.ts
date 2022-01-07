@@ -1,11 +1,17 @@
-import { Transform } from 'class-transformer';
+import {
+  ClassConstructor,
+  classToPlain,
+  plainToClass,
+  Transform,
+} from 'class-transformer';
 
-export const DynamoClassTransformer = <T>(): PropertyDecorator => {
+export const DynamoClassTransformer = <T>(
+  classConstructor: ClassConstructor<T>,
+): PropertyDecorator => {
   return (target: any, propertyKey: string | symbol): void => {
-    Transform(transformIncomingValue<T>(), { toClassOnly: true })(
-      target,
-      propertyKey,
-    );
+    Transform(transformIncomingValue<T>(classConstructor), {
+      toClassOnly: true,
+    })(target, propertyKey);
 
     Transform(transformOutgoingValue<T>(), {
       toPlainOnly: true,
@@ -14,13 +20,13 @@ export const DynamoClassTransformer = <T>(): PropertyDecorator => {
 };
 
 const transformIncomingValue =
-  <T>() =>
-  ({ value }: { value: string }): T => {
-    return JSON.parse(value) as T;
+  <T>(classConstructor: ClassConstructor<T>) =>
+  ({ value }: { value: string }) => {
+    return plainToClass(JSON.parse(value), classConstructor);
   };
 
 const transformOutgoingValue =
   <T>() =>
   ({ value }: { value: T }): string => {
-    return JSON.stringify(value);
+    return JSON.stringify(classToPlain(value));
   };
