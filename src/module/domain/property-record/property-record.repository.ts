@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { DatabaseRepository } from '../../global/database/database.repository';
-import { Property } from './property';
+import { PropertyRecord } from './property-record';
 import {
   CreateTableCommandInput,
   DynamoDBClient,
@@ -8,58 +8,62 @@ import {
 } from '@aws-sdk/client-dynamodb';
 import { InternalConfigService } from '../../global/config/internal-config.service';
 import { InternalException } from '../../../exception/internal-exception';
-import type { UUID } from '../../../types/uuid.type';
+import { UUID } from '../../../types/uuid.type';
 import { marshall, unmarshall } from '@aws-sdk/util-dynamodb';
 import { plainToClass } from 'class-transformer';
 
 @Injectable()
-export class PropertyRepository extends DatabaseRepository<Property> {
+export class PropertyRecordRepository extends DatabaseRepository<PropertyRecord> {
   constructor(client: DynamoDBClient, config: InternalConfigService) {
-    super(config.getDatabaseConfig().propertyTableName, client);
+    super(config.getDatabaseConfig().propertyRecordTableName, client);
   }
 
-  public async save(property: Property): Promise<Property> {
+  public async save(propertyRecord: PropertyRecord): Promise<PropertyRecord> {
     try {
-      return await this.putItem(property);
+      return await this.putItem(propertyRecord);
     } catch (error) {
-      throw new InternalException('PROPERTY.FAILED_TO_SAVE', error.message);
+      throw new InternalException(
+        'PROPERTY_RECORD.FAILED_TO_SAVE',
+        error.message,
+      );
+    }
+  }
+
+  public async delete(propertyRecordId: UUID, userId: UUID): Promise<void> {
+    try {
+      await this.deleteItem({ propertyRecordId, userId });
+    } catch (error) {
+      throw new InternalException(
+        'PROPERTY_RECORD.FAILED_TO_DELETE',
+        error.message,
+      );
     }
   }
 
   public async getByPropertyId(
     propertyId: UUID,
     userId: UUID,
-  ): Promise<Property | undefined> {
-    try {
-      return await this.getItem({ propertyId, userId }, Property);
-    } catch (error) {
-      throw new InternalException('PROPERTY.FAILED_TO_GET', error.message);
-    }
-  }
-
-  public async delete(propertyId: UUID, userId: UUID): Promise<void> {
-    try {
-      await this.deleteItem({ propertyId, userId });
-    } catch (error) {
-      throw new InternalException('PROPERTY.FAILED_TO_DELETE', error.message);
-    }
-  }
-
-  public async getByUserId(userId: UUID): Promise<Property[]> {
+  ): Promise<PropertyRecord[]> {
     const command = new QueryCommand({
       TableName: this.tableName,
-      IndexName: 'userIdIndex',
+      IndexName: 'userIdCategoryIdIndex',
       ExpressionAttributeValues: marshall({
         ':userId': userId,
+        ':propertyId': propertyId,
       }),
-      KeyConditionExpression: 'userId = :userId',
+      KeyConditionExpression: 'userId = :userId AND propertyId= :propertyId',
     });
 
     try {
       const { Items } = await this.client.send(command);
-      return Items.map((item) => plainToClass(Property, unmarshall(item)));
+      return Items.map((item) =>
+        plainToClass(PropertyRecord, unmarshall(item)),
+      );
     } catch (error) {
-      throw new InternalException('PROPERTY.FAILED_TO_GET', error.message);
+      throw new InternalException(
+        'PROPERTY_RECORD.FAILED_TO_GET',
+        error.message,
+      );
     }
   }
 
@@ -67,6 +71,10 @@ export class PropertyRepository extends DatabaseRepository<Property> {
     return {
       TableName: this.tableName,
       AttributeDefinitions: [
+        {
+          AttributeName: 'propertyRecordId',
+          AttributeType: 'S',
+        },
         {
           AttributeName: 'propertyId',
           AttributeType: 'S',
@@ -78,7 +86,7 @@ export class PropertyRepository extends DatabaseRepository<Property> {
       ],
       KeySchema: [
         {
-          AttributeName: 'propertyId',
+          AttributeName: 'propertyRecordId',
           KeyType: 'HASH',
         },
         {
@@ -88,11 +96,15 @@ export class PropertyRepository extends DatabaseRepository<Property> {
       ],
       GlobalSecondaryIndexes: [
         {
-          IndexName: 'userIdIndex',
+          IndexName: 'userIdPropertyIdIndex',
           KeySchema: [
             {
               AttributeName: 'userId',
               KeyType: 'HASH',
+            },
+            {
+              AttributeName: 'propertyId',
+              KeyType: 'RANGE',
             },
           ],
           Projection: { ProjectionType: 'ALL' },

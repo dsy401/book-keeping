@@ -10,7 +10,6 @@ import {
   Req,
 } from '@nestjs/common';
 import { UseJwtGuard } from '../../global/guard/jwt.guard';
-import { PropertyApplicationService } from './property.service';
 import { PropertyResponseDto } from './types/response.types';
 import {
   CreatePropertyRequestDto,
@@ -20,11 +19,12 @@ import {
 } from './types/request.types';
 import { JwtRequest } from '../../../types/request.type';
 import { Property } from '../../domain/property/property';
+import { PropertyService } from '../../domain/property/property.service';
 
 @Controller('api/v1/property')
 @UseJwtGuard()
 export class PropertyController {
-  constructor(private readonly propertyService: PropertyApplicationService) {}
+  constructor(private readonly propertyService: PropertyService) {}
 
   @Post('/')
   public async createProperty(
@@ -33,7 +33,7 @@ export class PropertyController {
   ): Promise<PropertyResponseDto> {
     const property = new Property(userId, type, amount, note, name);
 
-    await this.propertyService.createProperty(property);
+    await this.propertyService.save(property);
 
     return property;
   }
@@ -43,14 +43,14 @@ export class PropertyController {
     @Param() { propertyId }: PropertyIdParams,
     @Req() { user: { userId } }: JwtRequest,
   ): Promise<void> {
-    return this.propertyService.deleteProperty(propertyId, userId);
+    return this.propertyService.delete(propertyId, userId);
   }
 
   @Get('/all')
   public async getAllProperties(
     @Req() { user: { userId } }: JwtRequest,
   ): Promise<PropertyResponseDto[]> {
-    return this.propertyService.getPropertiesByUserId(userId);
+    return this.propertyService.getByUserId(userId);
   }
 
   @Patch(':propertyId')
@@ -59,11 +59,7 @@ export class PropertyController {
     @Body() { amount }: UpdatePropertyAmountRequestDto,
     @Req() { user: { userId } }: JwtRequest,
   ): Promise<PropertyResponseDto> {
-    return this.propertyService.updatePropertyAmount(
-      propertyId,
-      userId,
-      amount,
-    );
+    return this.propertyService.updateAmount(propertyId, userId, amount);
   }
 
   @Put(':propertyId')
@@ -72,12 +68,6 @@ export class PropertyController {
     @Req() { user: { userId } }: JwtRequest,
     @Body() { amount, note, name }: UpdatePropertyRequestDto,
   ): Promise<PropertyResponseDto> {
-    return this.propertyService.updateProperty(
-      propertyId,
-      userId,
-      amount,
-      note,
-      name,
-    );
+    return this.propertyService.update(propertyId, userId, amount, note, name);
   }
 }

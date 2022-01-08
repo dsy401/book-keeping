@@ -22,6 +22,9 @@ export class DatabaseConfig {
 
   @IsString()
   propertyTableName!: string;
+
+  @IsString()
+  propertyRecordTableName!: string;
 }
 
 export default registerAs(Config.DATABASE, () =>
@@ -33,5 +36,6 @@ export default registerAs(Config.DATABASE, () =>
     transactionCategoryTableName:
       process.env.DATABASE_TRANSACTION_CATEGORY_TABLE,
     propertyTableName: process.env.DATABASE_PROPERTY_TABLE,
+    propertyRecordTableName: process.env.DATABASE_PROPERTY_RECORD_TABLE,
   }),
 );

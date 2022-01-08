@@ -47,4 +47,7 @@ export class EnvironmentVariables {
 
   @IsString()
   DATABASE_PROPERTY_TABLE!: string;
+
+  @IsString()
+  DATABASE_PROPERTY_RECORD_TABLE!: string;
 }

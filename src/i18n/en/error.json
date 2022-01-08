@@ -27,6 +27,11 @@
     "FAILED_TO_GET": "property is failed be gotten.",
     "NOT_FOUND": "property not found."
   },
+  "PROPERTY_RECORD": {
+    "FAILED_TO_SAVE": "property record is failed to be saved.",
+    "FAILED_TO_DELETE": "property record is failed to be deleted.",
+    "FAILED_TO_GET": "property record is failed be gotten."
+  },
   "AUTH": {
     "INCORRECT_PASSWORD": "password is incorrect.",
     "AUTHORIZATION_NOT_PROVIDED": "No token provided"
