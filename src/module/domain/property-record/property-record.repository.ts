@@ -46,7 +46,7 @@ export class PropertyRecordRepository extends DatabaseRepository<PropertyRecord>
   ): Promise<PropertyRecord[]> {
     const command = new QueryCommand({
       TableName: this.tableName,
-      IndexName: 'userIdCategoryIdIndex',
+      IndexName: 'userIdPropertyIdIndex',
       ExpressionAttributeValues: marshall({
         ':userId': userId,
         ':propertyId': propertyId,

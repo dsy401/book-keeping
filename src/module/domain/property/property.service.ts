@@ -32,8 +32,21 @@ export class PropertyService {
     return this.propertyRepository.getByPropertyId(propertyId, userId);
   }
 
-  public delete(propertyId: UUID, userId: UUID): Promise<void> {
-    return this.propertyRepository.delete(propertyId, userId);
+  public async delete(propertyId: UUID, userId: UUID): Promise<void> {
+    const properties = await this.propertyRecordService.getByPropertyId(
+      propertyId,
+      userId,
+    );
+
+    //TODO: using BatchDelete
+    for (const property of properties) {
+      await this.propertyRecordService.delete(
+        property.propertyRecordId,
+        property.userId,
+      );
+    }
+
+    await this.propertyRepository.delete(propertyId, userId);
   }
 
   public async getByUserId(userId: UUID): Promise<Property[]> {
@@ -59,8 +72,6 @@ export class PropertyService {
 
     await this.save(property);
 
-    //TODO: add logs
-
     return property;
   }
 
@@ -80,8 +91,6 @@ export class PropertyService {
     property.update(amount, note, name);
 
     await this.save(property);
-
-    //TODO: add logs
 
     return property;
   }

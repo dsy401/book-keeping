@@ -10,7 +10,10 @@ import {
   Req,
 } from '@nestjs/common';
 import { UseJwtGuard } from '../../global/guard/jwt.guard';
-import { PropertyResponseDto } from './types/response.types';
+import {
+  PropertyRecordResponseDto,
+  PropertyResponseDto,
+} from './types/response.types';
 import {
   CreatePropertyRequestDto,
   PropertyIdParams,
@@ -20,11 +23,15 @@ import {
 import { JwtRequest } from '../../../types/request.type';
 import { Property } from '../../domain/property/property';
 import { PropertyService } from '../../domain/property/property.service';
+import { PropertyRecordService } from '../../domain/property-record/property-record.service';
 
 @Controller('api/v1/property')
 @UseJwtGuard()
 export class PropertyController {
-  constructor(private readonly propertyService: PropertyService) {}
+  constructor(
+    private readonly propertyService: PropertyService,
+    private readonly propertyRecordService: PropertyRecordService,
+  ) {}
 
   @Post('/')
   public async createProperty(
@@ -69,5 +76,14 @@ export class PropertyController {
     @Body() { amount, note, name }: UpdatePropertyRequestDto,
   ): Promise<PropertyResponseDto> {
     return this.propertyService.update(propertyId, userId, amount, note, name);
+  }
+
+  @Get('/:propertyId/records')
+  public getPropertyRecords(
+    @Param() { propertyId }: PropertyIdParams,
+    @Req() { user: { userId } }: JwtRequest,
+  ): Promise<PropertyRecordResponseDto[]> {
+    //TODO: make the pagination in the future
+    return this.propertyRecordService.getByPropertyId(propertyId, userId);
   }
 }
